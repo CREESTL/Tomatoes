@@ -5,9 +5,10 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "./ICucumberFactory.sol";
 import "./Cucumber.sol";
-import "./ERC721Tradable.sol";
 
 
+// TODO it was made from OpenSea Creature Factory - but we I dont need OpenSea anymore
+// TODO reformat code
 contract CucumberFactory is FactoryERC721, Ownable {
     using Strings for string;
 
@@ -51,11 +52,11 @@ contract CucumberFactory is FactoryERC721, Ownable {
     }
 
     function mint(address _toAddress) public {
-        ProxyRegistry proxyRegistry = ProxyRegistry(proxyRegistryAddress);
-        assert(
-            address(proxyRegistry.proxies(owner())) == _msgSender() ||
-                owner() == _msgSender()
-        );
+        // ProxyRegistry proxyRegistry = ProxyRegistry(proxyRegistryAddress);
+        // assert(
+        //     address(proxyRegistry.proxies(owner())) == _msgSender() ||
+        //         owner() == _msgSender()
+        // );
 
         Cucumber cucumber = Cucumber(nftAddress);
         cucumber.safeMint(_toAddress);
@@ -77,35 +78,4 @@ contract CucumberFactory is FactoryERC721, Ownable {
         mint(_to);
     }
 
-    /**
-     * Hack to get things to work automatically on OpenSea.
-     * Use isApprovedForAll so the frontend doesn't have to worry about different method names.
-     */
-    function isApprovedForAll(address _owner, address _operator)
-        public
-        view
-        returns (bool)
-    {
-        if (owner() == _owner && _owner == _operator) {
-            return true;
-        }
-
-        ProxyRegistry proxyRegistry = ProxyRegistry(proxyRegistryAddress);
-        if (
-            owner() == _owner &&
-            address(proxyRegistry.proxies(_owner)) == _operator
-        ) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Hack to get things to work automatically on OpenSea.
-     * Use isApprovedForAll so the frontend doesn't have to worry about different method names.
-     */
-    function ownerOf(uint256) public view returns (address _owner) {
-        return owner();
-    }
 }
